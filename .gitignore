@@ -1,0 +1,3 @@
+3rdparty/download/
+3rdparty/r_packages/
+!3rdparty/r_packages/.keep

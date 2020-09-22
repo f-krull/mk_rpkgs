@@ -3,7 +3,6 @@
 _all: all
 
 # packages
-
 r_pkgs := \
 	digest_0.6.25 \
 	jsonlite_1.7.1 \
@@ -11,11 +10,15 @@ r_pkgs := \
 	DBI_1.1.0
 
 # package dependencies
-
 .PHONY:
 3rdparty/r_packages/RPostgreSQL_0.6-2_deps: 3rdparty/r_packages/DBI_1.1.0
 
-# auto deps
+#-------------------------------------------------------------------------------
+
+# download
+r_pkgs_dl := $(patsubst %, 3rdparty/download/%.tar.gz, $(r_pkgs))
+
+# dummy deps
 .PHONY: $(addsuffix _deps, $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)))
 $(addsuffix _deps, $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs))): 
 
@@ -31,6 +34,8 @@ $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)): 3rdparty/r_packages/%: 3rdparty
 		|| Rscript -e 'options(warn = 2); install.packages("3rdparty/download/$*.tar.gz", lib="3rdparty/r_packages/", repos=NULL)'
 
 $(r_pkgs): %: 3rdparty/r_packages/%
+
+#-------------------------------------------------------------------------------
 
 all: $(r_pkgs)
 

@@ -16,7 +16,7 @@ $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)): 3rdparty/r_packages/%: 3rdparty
 	mkdir -p 3rdparty/r_packages/
   # get package name (without version string) and test if folder exists
 	test -d $(addprefix 3rdparty/r_packages/, $(firstword $(subst _, , $*))) \
-		|| Rscript -e 'install.packages("3rdparty/download/$*.tar.gz", lib="3rdparty/r_packages/", repos=NULL)'
+		|| Rscript -e 'options(warn = 2); install.packages("3rdparty/download/$*.tar.gz", lib="3rdparty/r_packages/", repos=NULL)'
 
 $(r_pkgs): %: 3rdparty/r_packages/%
 	echo $(firstword $(subst _, , $@))

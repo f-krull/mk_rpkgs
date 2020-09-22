@@ -1,3 +1,5 @@
+# sequential building
+MAKEFLAGS := -j 1
 
 .PHONY: _all
 _all: all
@@ -15,19 +17,21 @@ r_pkgs := \
 
 #-------------------------------------------------------------------------------
 
+# dummy deps
+r_pkg_deps := $(addsuffix _deps, $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)))
+.PHONY: $(r_pkg_deps)
+$(r_pkg_deps): 
+
 # download
 r_pkgs_dl := $(patsubst %, 3rdparty/download/%.tar.gz, $(r_pkgs))
-
-# dummy deps
-.PHONY: $(addsuffix _deps, $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)))
-$(addsuffix _deps, $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs))): 
-
 $(r_pkgs_dl): 3rdparty/download/%.tar.gz:
 	mkdir -p 3rdparty/download/
 	wget https://cran.r-project.org/src/contrib/$*.tar.gz -O $@
 
-.PHONY: $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs))
-$(patsubst %, 3rdparty/r_packages/%, $(r_pkgs)): 3rdparty/r_packages/%: 3rdparty/download/%.tar.gz 3rdparty/r_packages/%_deps
+# install
+r_pkgs_isnt := $(patsubst %, 3rdparty/r_packages/%, $(r_pkgs))
+.PHONY: $(r_pkgs_isnt)
+$(r_pkgs_isnt): 3rdparty/r_packages/%: 3rdparty/download/%.tar.gz 3rdparty/r_packages/%_deps
 	mkdir -p 3rdparty/r_packages/
   # get package name (without version string) and test if folder exists
 	test -d $(addprefix 3rdparty/r_packages/, $(firstword $(subst _, , $*))) \
